@@ -1,3 +1,6 @@
+// Interface que permite quem a implementa, usar um método com generics, capaz de desserializar o json e popular
+// diferentes tipos de objetos de acordo com a classe. É preciso informar a classe no parametro do chamamento do método.
+
 package br.com.alura.screenmatch.service;
 
 public interface IConverteDados {

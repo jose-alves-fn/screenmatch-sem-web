@@ -1,3 +1,6 @@
+// Essa classe desserializa um json para um objeto, e dependendo do que o objeto possa receber, os atributos populados
+// serão diferentes. O objeto mapper usado é da Classe Jackson.
+
 package br.com.alura.screenmatch.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

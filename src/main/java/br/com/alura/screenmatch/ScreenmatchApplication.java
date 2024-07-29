@@ -1,5 +1,6 @@
 package br.com.alura.screenmatch;
 
+import br.com.alura.screenmatch.model.DadosEpisodio;
 import br.com.alura.screenmatch.model.DadosSerie;
 import br.com.alura.screenmatch.service.ConsumoAPI;
 import br.com.alura.screenmatch.service.ConverteDados;
@@ -18,13 +19,47 @@ public class ScreenmatchApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
+		// Instanciando objeto da classe de consumo de API
 		ConsumoAPI consumoAPI = new ConsumoAPI();
-		String endereco = consumoAPI.obterDados("http://www.omdbapi.com/?t=gilmore+girls&apikey=45aad444");
-		System.out.println(endereco);
 
+		// Instanciando objeto da classe de conversão do json
+		// Detalhe: o método obterDados é genérico, o que é ótimo para receber objetos distintos para desserializar
 		ConverteDados conversor = new ConverteDados();
-		DadosSerie dados = conversor.obterDados(endereco, DadosSerie.class);
+
+		// Consumindo e executando o conversor de dados de serie
+		String json = consumoAPI.obterDados("http://www.omdbapi.com/?t=gilmore+girls&apikey=45aad444");
+		DadosSerie dados = conversor.obterDados(json, DadosSerie.class);
 		System.out.println(dados);
+
+		// Consumindo e executando o conversor e dados de episodios
+		json = consumoAPI.obterDados("http://www.omdbapi.com/?t=gilmore+girls&season=1&episode=2&apikey=45aad444");
+		DadosEpisodio dadosEpisodio = conversor.obterDados(json, DadosEpisodio.class);
+		System.out.println(dadosEpisodio);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //		String cafe = consumoAPI.obterDados("https://coffee.alexflipnote.dev/random.json");
 //		System.out.println(cafe);

@@ -1,3 +1,6 @@
+// Classe básica para definição de cliente, requisição e resposta a uma solicitação.
+// O método obterDados recebe um endereço e retoan umjson serializado
+
 package br.com.alura.screenmatch.service;
 
 import java.io.IOException;
