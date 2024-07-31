@@ -39,14 +39,13 @@ public class Principal {
         }
 
         // Imprimindo as informações dos episódios por temporada
-        for (DadosTemporada temporada : temporadas) {
-            System.out.println(temporada);
-        }
-
-// 		temporadas.forEach(System.out::println);
-//      http://www.omdbapi.com/?t=gilmore+girls&season=1&episode=2&apikey=45aad444
+        // Para cada temporada, imrpima o conteúdo
+        temporadas.forEach(System.out::println);
 
 
-
+        // Usando lambdas para imprimir todos os episodios por nome
+        // Para cada temporada t em temporadas, retorne a lista de episodios.
+        // Para cada episodio e na lista de episodios, imprima o titulo.
+        temporadas.forEach(t -> t.episodio().forEach(e -> System.out.println(e.titulo())));
     }
 }

@@ -18,3 +18,7 @@ public class ScreenmatchApplication implements CommandLineRunner {
 		principal.exibeMenu();
 	}
 }
+
+
+
+//      http://www.omdbapi.com/?t=gilmore+girls&season=1&episode=2&apikey=45aad444
