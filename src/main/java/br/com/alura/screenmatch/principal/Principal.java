@@ -3,6 +3,7 @@ package br.com.alura.screenmatch.principal;
 import br.com.alura.screenmatch.model.DadosEpisodio;
 import br.com.alura.screenmatch.model.DadosSerie;
 import br.com.alura.screenmatch.model.DadosTemporada;
+import br.com.alura.screenmatch.model.Episodio;
 import br.com.alura.screenmatch.service.ConsumoAPI;
 import br.com.alura.screenmatch.service.ConverteDados;
 
@@ -54,7 +55,6 @@ public class Principal {
         // Para cada temporada, cria um stream dos seus episódios.
         // "Achata" esses streams de episódios em um único stream contínuo de episódios, usando flatMap.
         // Coleta todos os episódios em uma única lista editavel (dadosEpisodios).
-
         List<DadosEpisodio> dadosEpisodios = temporadas.stream()
                 .flatMap(t -> t.episodio().stream())
                 .collect(Collectors.toList());
@@ -70,6 +70,22 @@ public class Principal {
                 .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
                 .limit(5)
                 .forEach(System.out::println);
+
+        // Lista de episodios com dados personalizados
+        // Usa a interface List para por meio de uma classe Episodio, instanciar um objeto episodio que vai receber
+        // uma lista temporadas, essa por sua vez vai ser transformada em uma stream()
+        // Aplica-se um processo de flatmap na lista temporadas, onde cada t na lista, vai ter um episodio recebendo uma stream
+        // Para cada dado d do episodiocontido em temporadas, um construtor da clase episodio vai ser chamado, passando dois parametros, sendo que um
+        // sera advindo de t.temporada que vem da classe dados Temporada, e outro vem de outra classe, no caso Dados episodio
+        // ao final, para terminar a stream, se joga numa lista
+
+        List<Episodio> episodios = temporadas.stream()
+                .flatMap(t -> t.episodio().stream()
+                        .map(d -> new Episodio(t.temporada(), d))
+                ).collect(Collectors.toList());
+
+        episodios.forEach(System.out::println);
+
 
 
 
