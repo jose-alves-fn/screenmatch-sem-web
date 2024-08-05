@@ -64,11 +64,16 @@ public class Principal {
         // Valores equals "N/A"serão removidos do stream()\// ! é o operador de negação que inverte o resultado da expressão.
         // !e.avaliacao().equalsIgnoreCase("N/A") será true se a avaliação não for "N/A".
         // !e.avaliacao().equalsIgnoreCase("N/A") será false se a avaliação for "N/A".
-        System.out.println("\nTop 5 episódios em avaliação:");
+        System.out.println("\nTop 10 episódios em avaliação:");
         dadosEpisodios.stream()
                 .filter(e -> !e.avaliacao().equalsIgnoreCase("N/A"))
+                .peek(e -> System.out.println("Primeiro filtro (sem os N/A)" + e))
                 .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
-                .limit(5)
+                .peek(e -> System.out.println("Ordenando pelo maior valor" + e))
+                .limit(10)
+                .peek(e-> System.out.println("Pegando os 10 maiores valores" + e))
+                .map(e -> e.titulo().toUpperCase())
+                .peek(e -> System.out.println("Subindo para upperCase"))
                 .forEach(System.out::println);
 
         // **** Lista de episodios com dados personalizados
@@ -86,55 +91,92 @@ public class Principal {
 
         episodios.forEach(System.out::println);
 
-        // **** Criando uma visualização de episódios por meio de escolha da data pelo usuário
+        // **** Verificando um trecho do título para localizar um episodio
+        // A operaçao final findFirst precisa ter seu retorno incluido em alguma variável
+        // Optional é um objeto container que pode ou não cpnter um valor não nulo
 
-        System.out.println("A partir de qual ano deseja ver os episódios?");
-        var ano = leitura.nextInt();
-        leitura.nextLine();
+        System.out.println("Digite o episódio ou parte dele: ");
+        var trechoTitulo = leitura.nextLine();
+        Optional<Episodio> episodioBuscado = episodios.stream()
+                .filter(e -> e.getTitulo().toUpperCase().contains(trechoTitulo.toUpperCase()))
+                .findFirst();
+        if (episodioBuscado.isPresent()) { // Verificando se há um objeto dentro do container
+            System.out.println("Episódio encontrado!");
+            System.out.println("Temporada: " + episodioBuscado.get().getTemporada()); // .get() para acessar o conteúdo do container Optional
+        } else {
+            System.out.println("Episódio não encontrado!");
+        }
 
-        // Defininco o recebimento da data
-        LocalDate dataBusca = LocalDate.of(ano, 1, 1);
-
-        // Construindo um formatador para tratar a data tipo BR
-        DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        episodios.stream()
-                .filter(e -> e.getDataLancamento() != null && e.getDataLancamento().isAfter(dataBusca))
-                .forEach(e -> System.out.println(
-                        "Temporada: " + e.getTemporada() + ", " +
-                                "Episódio: " + e.getTitulo() + ", " +
-                                "Data de lançamento: " + e.getDataLancamento().format(formatador)
-                ));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//        List<String> nomes = Arrays.asList("liliam", "marco", "josé", "ana paula", "geanny", "nívea");
+//        // **** Criando uma visualização de episódios por meio de escolha da data pelo usuário
 //
-//        // Stream
-//        nomes.stream()
-//                .sorted() // Op. intermediária
-//                .limit(3) // Op. intermediária
-//                .filter(n -> n.startsWith("a")) // Op. intermediária
-//                .map(n -> n.toUpperCase())
-//                .forEach(System.out::println);// Op. final
+//        System.out.println("A partir de qual ano deseja ver os episódios?");
+//        var ano = leitura.nextInt();
+//        leitura.nextLine();
+//
+//        // Defininco o recebimento da data
+//        LocalDate dataBusca = LocalDate.of(ano, 1, 1);
+//
+//        // Construindo um formatador para tratar a data tipo BR
+//        DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+//
+//        episodios.stream()
+//                .filter(e -> e.getDataLancamento() != null && e.getDataLancamento().isAfter(dataBusca))
+//                .forEach(e -> System.out.println(
+//                        "Temporada: " + e.getTemporada() + ", " +
+//                                "Episódio: " + e.getTitulo() + ", " +
+//                                "Data de lançamento: " + e.getDataLancamento().format(formatador)
+//                ));
+
+        // **** Criando métricas (avaliação por temporada), usando um Map para receber a coleta
+        // As tempradas teram um inteiro como identificador (chave)
+        // As avaliações médias terão um Double como valor
+        // Durante  a operação groupingBy, o stream é percorrido e cada episódio é classificado na coleção com base no valor retornado por getTemporada.
+        // para cada objeto Episodio no stream, o método getTemporada deve ser chamado
+        // Durante a operação averagingDouble, o stream é percorrido e a avaliação de cada episódio é usada para calcular a média.
+        // para cada objeto Episodio no stream, o método getAvaliacao deve ser chamado.
+
+        Map<Integer, Double> avaliacoesPorTemporada = episodios.stream()
+                //.filter(e -> e.getTemporada() != null && e.getAvaliacao() != null)
+                .filter(e -> e.getAvaliacao() > 0.0)
+                .collect(Collectors.groupingBy(Episodio::getTemporada,
+                        Collectors.averagingDouble(Episodio::getAvaliacao)));
+
+        System.out.println(avaliacoesPorTemporada);
+
+        // **** Criando métricas para dados, utilizando classes específicas para isso
+        // DoubleSummaryStatistics e IntSummaryStatistics são exemplos
+
+        DoubleSummaryStatistics est = episodios.stream()
+                .filter(e -> e.getAvaliacao() > 0.0)
+                .collect(Collectors.summarizingDouble(Episodio::getAvaliacao));
+
+        System.out.println("Média de avaliações dos episódios: " + est.getAverage() +
+                "\nQuantidade de avaliações: " + est.getCount() +
+                "\nAvaliação máxima: " + est.getMax() +
+                "\nAvaliação mínima: " + est.getMin());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
